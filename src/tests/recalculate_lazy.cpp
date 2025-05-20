@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
 
-#define _DEBUG
+#define _SIRI_DEBUG
 #include "siri-tools.hpp"
 
 class A {
@@ -17,6 +17,9 @@ public:
 private:
 	int base = 0;
 	std::function<int(void)> recalc() {
+		// NOTE: This lambda captures `this` by reference, 
+		// and so `this` in the lambda's context will mutate automatically, 
+		// when `base` changes.
 		auto lambda = [this]() {return base + 1;};
 		return lambda;
 	}
