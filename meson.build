@@ -7,7 +7,8 @@ project('siri-cpp-tools', 'cpp',
 # Note: All of the headers in `include` should be public.
 include = include_directories('include')
 
-lib = library('siricxx', 'src/lib.cpp', include_directories: include)
+lib = library('siricxx', 'src/lib.cpp', include_directories: include, install: true)
+install_subdir('include', install_dir : '')
 
 dep_siricxx = declare_dependency(link_with: lib, include_directories: include)
 
