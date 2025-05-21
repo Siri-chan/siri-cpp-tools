@@ -21,6 +21,62 @@ meson setup ./buildDir && meson compile -C ./buildDir siricxx
 Compile with `CFLAGS="-D_SIRI_DEBUG $CFLAGS"` or `#define _SIRI_DEBUG` 
 to enable more expressive logging and some debug assertions.
 
+#### Using with other build tools
+##### CMake
+In a CMake Project, you can declare an ExternalProject, 
+then include the relevant headers and link to it:
+```cmake
+include(ExternalProject)
+
+ExternalProject_Add(
+        siri-tools
+        GIT_REPOSITORY https://github.com/Siri-chan/siri-cpp-tools.git
+        GIT_TAG develop #or some other tag
+        GIT_SHALLOW true
+
+        CONFIGURE_COMMAND meson setup --reconfigure <BINARY_DIR> <SOURCE_DIR>
+
+        BUILD_COMMAND meson compile -C <BINARY_DIR> siricxx
+
+        INSTALL_COMMAND meson install --no-rebuild -C <BINARY_DIR> --destdir <INSTALL_DIR>
+
+        TEST_COMMAND meson test -C <BINARY_DIR>
+)
+
+ExternalProject_Get_Property(siri-tools INSTALL_DIR)
+include_directories(${INSTALL_DIR}/usr/local/include)
+
+add_executable(your_executable main.cpp)
+add_dependencies( your_executable siri-tools )
+```
+##### System-wide install and pkg-config
+Simply running 
+```sh
+meson setup buildDir && meson install -C buildDir
+```
+will install libraries into a system wide location 
+(asking for root permissions, if required)
+This is `/usr/local` by default on my system, but I usually change it to `/usr` 
+(see [Change of prefix](#change-of-prefix) to see how to change it).
+
+Meson should automatically generate a `.pc` file for use with `pkg-config`,
+as well as installing the headers and library to `./include` and `./lib`.
+
+You can then link using shell substitution, or whatever other appropriate method:
+```sh
+g++ $CXXFLAGS `pkg-config libsiricxx --cflags` main.cpp -c -o main.o
+g++ $LIBS `pkg-config libsiricxx --libs` main.o -o your_executable
+```
+
+
+###### Change of prefix
+If you would prefer to have a more typical prefix 
+of `/usr` rather than `/usr/local`, use 
+```sh
+meson configure --prefix /usr
+```
+or pass `--prefix /usr` into `meson setup`.
+
 ## Library Contents
 
 - `int sanity_check()`, a function that returns 0.
