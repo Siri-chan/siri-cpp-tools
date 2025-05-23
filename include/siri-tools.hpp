@@ -17,9 +17,11 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
+#include <cstdlib>
 #include <iostream>
 #include <functional>
 #include <optional>
+#include <stacktrace>
 
 
 /*!
@@ -43,6 +45,66 @@ namespace siri::tools {
 	 */
 	int sanity_check();
 
+// <cstdlib> assert macro has issues here.
+#undef assert
+
+	// NOTE: These were once constexpr but I'd need to define these inline and thats un-idiomatic.
+	/*!
+	 * \brief Print an error message and exit from the program if a statement is not true.
+	 *
+	 * Uses `std::exit()`, rather than `std::abort()`/`std::terminate()`. 
+	 * If this behaviour is not desired, try `abort_assert()`.
+	 *
+	 * This function will exit regardless of debug status.
+	 * If this behaviour is not desired, try `debug_assert()`.
+	 * 
+	 * \since 0.1
+	 * \author Siri
+	 */
+	void assert(bool const &cond, const char *const msg = "<...>") noexcept;
+
+	/*!
+	 * \brief Print an error message and exit from the program if a statement is not true.
+	 *
+	 * Uses `std::exit()`, rather than `std::abort()`/`std::terminate()`. 
+	 * If this behaviour is not desired, try `debug_abort_assert()`.
+	 *
+	 * This function will exit only if `_SIRI_DEBUG` is defined.
+	 * If this behaviour is not desired, try `assert()`.
+	 * 
+	 * \since 0.1
+	 * \author Siri
+	 */
+	void debug_assert([[maybe_unused]] bool const &cond, [[maybe_unused]] const char *const msg = "<...>") noexcept;
+
+	/*!
+	 * \brief Print an error message and exit from the program if a statement is not true.
+	 *
+	 * Uses `std::abort()`, rather than `std::exit()`/`std::terminate()`. 
+	 * If this behaviour is not desired, try `assert()`.
+	 *
+	 * This function will exit regardless of debug status.
+	 * If this behaviour is not desired, try `debug_abort_assert()`.
+	 * 
+	 * \since 0.1
+	 * \author Siri
+	 */
+	void abort_assert(bool const &cond, const char *const msg = "<...>") noexcept;
+
+	/*!
+	 * \brief Print an error message and exit from the program if a statement is not true.
+	 *
+	 * Uses `std::abort()`, rather than `std::exit()`/`std::terminate()`. 
+	 * If this behaviour is not desired, try `debug_assert()`.
+	 *
+	 * This function will exit only if `_SIRI_DEBUG` is defined.
+	 * If this behaviour is not desired, try `abort_assert()`.
+	 * 
+	 * \since 0.1
+	 * \author Siri
+	 */
+	void debug_abort_assert([[maybe_unused]] bool const &cond, [[maybe_unused]] const char *const msg = "<...>") noexcept;
+	
 	/*!
 	 * \brief A OnceCell style object that lazily evaluates it's contents, only when required.
 	 *
@@ -91,3 +153,6 @@ namespace siri::tools {
 	};
 #include "RecalculateLazy_template.hpp"
 }
+
+// Replace <cstdlib> assert with ours.
+using siri::tools::assert;
