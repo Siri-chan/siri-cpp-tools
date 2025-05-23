@@ -81,6 +81,7 @@ or pass `--prefix /usr` into `meson setup`.
 
 - `int sanity_check()`, a function that returns 0.
 - `RecalculateLazy<T>`, a class that manages a lazily-reevaluated optional.
+- `void assert(bool, char*)` (et al.), a set of custom assertion functions. 
 
 ## Documentation
 This repository does not contain any generated documentation, 
