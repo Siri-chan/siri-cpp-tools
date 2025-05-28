@@ -2,6 +2,7 @@
 project('siri-cpp-tools', 'cpp',
   version : '0.1',
   license: 'LGPL-3.0-or-later',
+  meson_version: '>=1.1',
   default_options : [
     'cpp_std=c++23',
     'default_library=shared', 
@@ -9,11 +10,31 @@ project('siri-cpp-tools', 'cpp',
   ]
 )
 
+## Option and Dependency Handling
+extra_cflags = []
+
+opt_boost = get_option('boost')
+
+dep_boost = dependency('boost', required: opt_boost)
+
+dl_dep = dependency('', required: false)
+if dep_boost.found()
+  # LibDL is required for boost::stacktrace to behave
+  #dl_dep = cc.find_library('dl', required: false)
+else
+  extra_cflags += '-D_SIRI_NOBOOST'
+endif
 ## Library
 # Note: All of the headers in `include` should be public.
 include = include_directories('include')
 
-lib = library('siricxx', 'src/lib.cpp', 'src/assert.cpp', include_directories: include, install: true)
+lib = library('siricxx', 'src/lib.cpp', 'src/assert.cpp', 
+  cpp_args: extra_cflags,
+  include_directories: include, 
+  install: true,
+  dependencies: [dep_boost, 
+    #dl_dep
+    ])
 install_subdir('include', install_dir : '')
 
 ## Pkg Config

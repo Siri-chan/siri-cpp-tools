@@ -22,8 +22,10 @@ If not, see <https://www.gnu.org/licenses/>.
 #include <functional>
 #include <optional>
 #include <stacktrace>
-
-
+#ifndef _SIRI_NOBOOST
+#include <boost/stacktrace.hpp>
+#include <boost/type_index.hpp>
+#endif
 /*!
  * \brief The root namespace.
  *

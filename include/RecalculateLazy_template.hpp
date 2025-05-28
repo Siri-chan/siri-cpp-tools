@@ -14,7 +14,6 @@ You should have received a copy of the GNU Lesser General Public License along w
 If not, see <https://www.gnu.org/licenses/>. 
 */
 
-
 // Function templates for RecalculateLazy, 
 // because I can't define them in a .cpp file, 
 // or it won't generate templates properly.
@@ -39,9 +38,12 @@ T RecalculateLazy<T>::get() {
 		} catch (::std::bad_function_call& ex) {
 			::std::cerr << ::std::endl <<
 				"bad_function_call in RecalculateLazy<" <<
+#ifdef _SIRI_NOBOOST
 				typeid(T).name() << // NOTE: I'm not sure I can demangle this without using boost or a GNU extension 
 									// I don't even think it is mangled on MSVC for example.
-									// I should consider if I need this and/or if I want to include boost as a dependency.
+#else
+				boost::typeindex::type_id<T>().pretty_name() <<
+#endif
 				">, is your function pointer non-null and of type <T(void)>?" <<
 			::std::endl;
 			throw (ex);

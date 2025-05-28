@@ -8,8 +8,7 @@ Compiling this project requires:
     (I use the latest stable `g++`, 
     which is what I officially support, but `clang++` and (possibly) MSVC `cl` should also work)
 - Meson (and by extension, python3, ninja, etc.)
-
-_**Note:** While this library doesn't currently depend on Boost, I am seriously considering requiring it._
+- Boost (unless explicitly disabled with `meson configure -Dboost=disabled`)
 
 Optionally, it is useful to also have:
 - Doxygen (for generating documentation locally)

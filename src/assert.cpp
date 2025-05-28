@@ -11,16 +11,19 @@ namespace siri::tools {
 	}
 	void assert(bool const &cond, const char *const msg /* = "<...>" */) noexcept {
 		if (cond) return;
-		std::cerr << "Assertion Failed: " << msg << std::endl 
+		std::cerr << "Assertion Failed: " << msg << std::endl; 
+#ifdef _SIRI_NOBOOST
 		// <stacktrace> is a C++23 feature but still requires linking with 
 		// `-lstdc++exp` with g++. 
-		// TODO: Re-add this once it gets stabilised, or just use boost::stacktrace::stacktrace()
-		//			because ofc that exists.
+		// TODO: Re-add this once it gets stabilised.
 			/*
-			<<
+			std::cerr <<
 			"Stacktrace:" << std::endl << std::stacktrace::current() << std::endl; 
 			*/
 			;
+#else
+		std::cerr << "Stacktrace:" << std::endl << boost::stacktrace::stacktrace() << std::endl; 
+#endif
 		exit(101);
 	}
 
@@ -34,16 +37,19 @@ namespace siri::tools {
 	}
 	void abort_assert(bool const &cond, const char *const msg /* = <...> */) noexcept {
 		if (cond) return;
-		std::cerr << "Assertion Failed: " << msg << std::endl 
+		std::cerr << "Assertion Failed: " << msg << std::endl;
+#ifdef _SIRI_NOBOOST
 		// <stacktrace> is a C++23 feature but still requires linking with 
 		// `-lstdc++exp` with g++. 
-		// TODO: Re-add this once it gets stabilised, or just use boost::stacktrace::stacktrace()
-		//			because ofc that exists.
+		// TODO: Re-add this once it gets stabilised.
 			/*
-			<<
+			std::cerr <<
 			"Stacktrace:" << std::endl << std::stacktrace::current() << std::endl; 
 			*/
 			;
+#else
+		std::cerr << "Stacktrace:" << std::endl << boost::stacktrace::stacktrace() << std::endl; 
+#endif
 		abort();
 	}
 }
